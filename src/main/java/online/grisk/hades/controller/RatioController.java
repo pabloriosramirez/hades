@@ -11,11 +11,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
@@ -24,10 +27,16 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 public class RatioController {
 
 	@PostMapping(value = "/v1/rest/ratios")
-	public void calculateRatios(@RequestBody JsonNode payload) throws IOException {
+	public ResponseEntity<?> calculateRatios(@RequestBody JsonNode payload) throws IOException {
 
 		JsonNode values = payload.get("dataintegration").get("values");
 		JsonNode ratiosCollections = payload.get("riskRatios").get("configuration").get("ratiosCollection");
+		
+		ObjectMapper mapper = new ObjectMapper();
+		
+		Map<String, Object> jsonMap = mapper.convertValue(payload, Map.class);
+		
+		List<Map<String, Object>> nuevosDatos = new ArrayList<Map<String,Object>>();
 		
 		List<JsonNode> listaValues = new ArrayList<JsonNode>();
 		if (values.isArray()) {
@@ -36,14 +45,9 @@ public class RatioController {
 			}
 		}
 		
-		for (int i = 0; i < listaValues.size(); i++) {
-			System.out.println(listaValues.get(i));
-		}		
-		
 		if(ratiosCollections.isArray()) {
 			
 			for (final JsonNode objNode : ratiosCollections) {
-				System.out.println(objNode);
 				Set<String> setVariablesEnOperacion = new HashSet<String>();  
 				Pattern p = Pattern.compile(Pattern.quote("{") + "(.*?)" + Pattern.quote("}"));
 				Matcher m = p.matcher(objNode.get("operation").asText());
@@ -63,17 +67,27 @@ public class RatioController {
 					}
 				});
 	
-				System.out.println(objNode.get("operation").asText());
-		     	Expression e = new ExpressionBuilder(objNode.get("operation").asText())
-		    	        .variables(setVariablesEnOperacion)
-		    	        .build()
-		    	        .setVariables(mapVariablesValor);
-		    	double result = e.evaluate();
-	    	
-		    	System.out.println("RESULTADO: " + result);
-		        
+		     	Expression exp = new ExpressionBuilder(objNode.get("operation").asText()).variables(setVariablesEnOperacion).build() .setVariables(mapVariablesValor);
+		     	
+		    	Map<String, Object> jsonResult = new HashMap<String, Object>();
+		    	jsonResult.put("idRatio", objNode.get("idRatio").asInt());
+		    	String operacion = objNode.get("operation").asText().replace("{", "").replace("}", "");
+		    	for (Map.Entry<String, Double> entry : mapVariablesValor.entrySet()) {
+		    		operacion = operacion.replace(entry.getKey(), entry.getValue().toString());
+		    	}
+		    	jsonResult.put("operation", operacion);
+		    	jsonResult.put("result", exp.evaluate());
+		    	jsonResult.put("titule", objNode.get("titule").asText());
+		    	jsonResult.put("color", objNode.get("color").asText());
+		    	jsonResult.put("postResult", objNode.get("postResult").asText());
+		    	jsonResult.put("orderDisplay", objNode.get("orderDisplay").asInt());
+		    	
+		    	nuevosDatos.add(jsonResult); 
 		    }
 		}
+//		jsonMap.put("ratioResponse", nuevosDatos);
+		((Map)jsonMap.get("riskRatios")).put("values", nuevosDatos);
+		return new ResponseEntity<Map<String, Object>>(jsonMap, HttpStatus.OK);
 	}
 
 }
