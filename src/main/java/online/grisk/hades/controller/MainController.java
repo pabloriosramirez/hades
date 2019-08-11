@@ -9,10 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import net.objecthunter.exp4j.Expression;
-import net.objecthunter.exp4j.ExpressionBuilder;
-import net.objecthunter.exp4j.operator.Operator;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,5 +50,21 @@ public class MainController {
     	System.out.println("RES 1>2: " + MathOperator.gratherThan("1>2"));
     	System.out.println("RES 2>2: " + MathOperator.gratherThan("2>2"));
     	System.out.println("RES 3>2: " + MathOperator.gratherThan("3>2"));
+    	
+    	System.out.println("RES 1<2: " + MathOperator.lessThan("1<2"));
+    	System.out.println("RES 2<2: " + MathOperator.lessThan("2<2"));
+    	System.out.println("RES 3<2: " + MathOperator.lessThan("3<2"));
+    	
+    	System.out.println("RES 1<=2: " + MathOperator.lessEqualThan("1<=2"));
+    	System.out.println("RES 2<=2: " + MathOperator.lessEqualThan("2<=2"));
+    	System.out.println("RES 3<=2: " + MathOperator.lessEqualThan("3<=2"));
+    	
+     	System.out.println("RES 1==2: " + MathOperator.equalThan("1==2"));
+    	System.out.println("RES 2==2: " + MathOperator.equalThan("2==2"));
+    	System.out.println("RES 3==2: " + MathOperator.equalThan("3==2"));
+    	
+     	System.out.println("RES 1!=2: " + MathOperator.notEqualThan("1!=2"));
+    	System.out.println("RES 2!=2: " + MathOperator.notEqualThan("2!=2"));
+    	System.out.println("RES 3!=2: " + MathOperator.notEqualThan("3!=2"));
     }
 }
