@@ -26,7 +26,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 @RestController
 public class RatioController {
 
-	@PostMapping(value = "/v1/rest/ratios")
+	@PostMapping(value = "/api/atenea/ratios")
 	public ResponseEntity<?> calculateRatios(@RequestBody JsonNode payload) throws IOException {
 
 		JsonNode values = payload.get("dataintegration").get("values");
@@ -76,7 +76,12 @@ public class RatioController {
 		    		operacion = operacion.replace(entry.getKey(), entry.getValue().toString());
 		    	}
 		    	jsonResult.put("operation", operacion);
-		    	jsonResult.put("result", exp.evaluate());
+		    	try {
+		    		jsonResult.put("result", exp.evaluate());
+				} catch (Exception e) {
+					jsonResult.put("result", 0);
+				}
+		    	
 		    	jsonResult.put("titule", objNode.get("titule").asText());
 		    	jsonResult.put("color", objNode.get("color").asText());
 		    	jsonResult.put("postResult", objNode.get("postResult").asText());
