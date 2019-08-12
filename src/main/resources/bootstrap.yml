@@ -7,6 +7,6 @@ spring:
       label:  ${SPRING_CLOUD_CONFIG_LABEL}
       profile:  ${SPRING_CLOUD_CONFIG_PROFILE}
      
-server:
-  port: 8090
+#server:
+#  port: 8090
      
