@@ -26,7 +26,7 @@ import net.objecthunter.exp4j.ExpressionBuilder;
 @RestController
 public class RatioController {
 
-	@PostMapping(value = "/api/atenea/ratios")
+	@PostMapping(value = "/api/hades/ratios")
 	public ResponseEntity<?> calculateRatios(@RequestBody JsonNode payload) throws IOException {
 
 		JsonNode values = payload.get("dataintegration").get("values");
