@@ -30,7 +30,7 @@ public class RatioController {
 	public ResponseEntity<?> calculateRatios(@RequestBody JsonNode payload) throws IOException {
 
 		JsonNode values = payload.get("dataintegration").get("values");
-		JsonNode ratiosCollections = payload.get("riskRatios").get("configuration").get("ratiosCollection");
+		JsonNode ratiosCollections = payload.get("riskRatios").get("configuration").get("riskRatiosRatiosCollection");
 		
 		ObjectMapper mapper = new ObjectMapper();
 		
@@ -50,7 +50,7 @@ public class RatioController {
 			for (final JsonNode objNode : ratiosCollections) {
 				Set<String> setVariablesEnOperacion = new HashSet<String>();  
 				Pattern p = Pattern.compile(Pattern.quote("{") + "(.*?)" + Pattern.quote("}"));
-				Matcher m = p.matcher(objNode.get("operation").asText());
+				Matcher m = p.matcher(objNode.get("expression").asText());
 				
 				while (m.find()) {
 				  setVariablesEnOperacion.add(m.group(1));
@@ -67,15 +67,15 @@ public class RatioController {
 					}
 				});
 	
-		     	Expression exp = new ExpressionBuilder(objNode.get("operation").asText()).variables(setVariablesEnOperacion).build() .setVariables(mapVariablesValor);
+		     	Expression exp = new ExpressionBuilder(objNode.get("expression").asText()).variables(setVariablesEnOperacion).build() .setVariables(mapVariablesValor);
 		     	
 		    	Map<String, Object> jsonResult = new HashMap<String, Object>();
-		    	jsonResult.put("idRatio", objNode.get("idRatio").asInt());
-		    	String operacion = objNode.get("operation").asText().replace("{", "").replace("}", "");
+		    	jsonResult.put("idRiskRatioRatio", objNode.get("idRiskRatioRatio").asLong());
+		    	String operacion = objNode.get("expression").asText().replace("{", "").replace("}", "");
 		    	for (Map.Entry<String, Double> entry : mapVariablesValor.entrySet()) {
 		    		operacion = operacion.replace(entry.getKey(), entry.getValue().toString());
 		    	}
-		    	jsonResult.put("operation", operacion);
+		    	jsonResult.put("expression", operacion);
 		    	try {
 		    		jsonResult.put("result", exp.evaluate());
 				} catch (Exception e) {
